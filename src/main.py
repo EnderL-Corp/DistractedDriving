@@ -1,4 +1,4 @@
-import tensorflow
+from src.imagedata import train_neural_net
 
 if __name__ == "__main__":
-    print("Bonjour tout le monde!")
+    train_neural_net()
