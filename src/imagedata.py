@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import keras as k
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plot
 
 class_names = ['Normal driving',
                'Texting',
@@ -39,7 +39,7 @@ def train_neural_net():
     # The third layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
     model = k.Sequential([
-        k.layers.Flatten(input_shape=(28, 28)),
+        k.layers.Flatten(input_shape=(640, 480)),
         k.layers.Dense(128, activation=tf.nn.relu),
         k.layers.Dense(8, activation=tf.nn.softmax)
     ])
@@ -64,3 +64,50 @@ def train_neural_net():
     test_loss, test_acc = model.evaluate(test_images, test_labels)
     print('Test accuracy:', test_acc)
 
+    # Save our model's guesses
+    predictions = model.predict(test_images)
+
+    # Show a cool plot of some results
+    num_rows = 5
+    num_cols = 3
+    num_images = num_rows * num_cols
+    plot.figure(figsize=(4 * num_cols, 2 * num_rows))
+    for i in range(num_images):
+        plot.subplot(num_rows, 2 * num_cols, 2 * i + 1)
+        plot_image(i, predictions, test_labels, test_images)
+        plot.subplot(num_rows, 2 * num_cols, 2 * i + 2)
+        plot_value_array(i, predictions, test_labels)
+    plot.show()
+
+
+def plot_image(i, predictions_array, true_label, img):
+    predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+    plot.grid(False)
+    plot.xticks([])
+    plot.yticks([])
+
+    plot.imshow(img, cmap=plot.cm)
+
+    predicted_label = np.argmax(predictions_array)
+    if predicted_label == true_label:
+        color = 'blue'
+    else:
+        color = 'red'
+
+    plot.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label],
+                                          100 * np.max(predictions_array),
+                                          class_names[true_label]),
+                color=color)
+
+
+def plot_value_array(i, predictions_array, true_label):
+    predictions_array, true_label = predictions_array[i], true_label[i]
+    plot.grid(False)
+    plot.xticks([])
+    plot.yticks([])
+    this_plot = plot.bar(range(10), predictions_array, color="#777777")
+    plot.ylim([0, 1])
+    predicted_label = np.argmax(predictions_array)
+
+    this_plot[predicted_label].set_color('red')
+    this_plot[true_label].set_color('blue')
