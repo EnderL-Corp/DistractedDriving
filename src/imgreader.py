@@ -11,6 +11,7 @@ def getTrainFiles():
     imgdir = dir + 'imgs\\train'
     x_train = np.empty(dtype=None, shape=0)
     y_train = np.empty(dtype=None, shape=0)
+    i = 0
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
     for distractionfolder in os.listdir(imgdir):
         for image in os.listdir(imgdir + '\\' + distractionfolder):
@@ -18,7 +19,13 @@ def getTrainFiles():
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             x_train = np.append(x_train, img)
             (labelx, labely) = np.where(imagelist == image)
-            labelx = labelx[0][0]
+            labelx = labelx[0]
             labely = 1
             y_train = np.append(y_train, imagelist[labelx][labely])
+            i += 1
+            print(i)
     return x_train, y_train
+
+
+if __name__ == "__main__":
+    print(getTrainFiles())
