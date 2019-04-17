@@ -46,7 +46,7 @@ def train_neural_net():
     model = k.Sequential([
         k.layers.Flatten(input_shape=(640, 480)),
         k.layers.Dense(128, activation=tf.nn.relu),
-        k.layers.Dense(8, activation=tf.nn.softmax)
+        k.layers.Dense(10, activation=tf.nn.softmax)
     ])
     print("Created net")
 
@@ -68,7 +68,8 @@ def train_neural_net():
     # Save our model again, but this time the entire model in HDF5 format
     model.save('distracted_driver_recognition.h5')
 
-    """# Apply our neural net to the test data and see how it performs
+    """
+    # Apply our neural net to the test data and see how it performs
     test_loss, test_acc = model.evaluate(test_images, test_labels)
     print('Test accuracy:', test_acc)
 
