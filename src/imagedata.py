@@ -7,14 +7,20 @@ from tensorflow import keras as k
 import numpy as np
 import matplotlib.pyplot as plot
 
-class_names = ['Normal driving',
-               'Texting',
-               'Talking on phone',
-               'Operating Radio',
-               'Drinking',
-               'Reaching behind',
-               'Hair and makeup',
-               'Talking to passenger']
+from src import imgreader
+
+class_lookup_table = [['c0', 'Normal driving'],
+                      ['c1', 'Texting'],
+                      ['c2', 'Talking on phone'],
+                      ['c3', 'Texting'],
+                      ['c4', 'Talking on phone'],
+                      ['c5', 'Operating Radio'],
+                      ['c6', 'Drinking'],
+                      ['c7', 'Reaching behind'],
+                      ['c8', 'Hair and makeup'],
+                      ['c9', 'Talking to passenger']]
+
+class_names = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9']
 
 
 def train_neural_net():
@@ -25,13 +31,12 @@ def train_neural_net():
                                                       save_weights_only=True,
                                                       verbose=1)
 
-    distracted_drivers = 0
-    # distracted_drivers = csvreader.parse()
-    (train_images, train_labels), (test_images, test_labels) = distracted_drivers  # .getData()
+    distracted_drivers = imgreader.getTrainFiles()
+    print("Got files")
+    train_images, train_labels = distracted_drivers  # .getData()
 
     # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
     train_images = train_images / 255.0
-    test_images = test_images / 255.0
 
     # Define our model. This model consists of 3 layers:
     # Flatten converts the image into a one dimensional array to pass through our net
@@ -41,8 +46,9 @@ def train_neural_net():
     model = k.Sequential([
         k.layers.Flatten(input_shape=(640, 480)),
         k.layers.Dense(128, activation=tf.nn.relu),
-        k.layers.Dense(8, activation=tf.nn.softmax)
+        k.layers.Dense(10, activation=tf.nn.softmax)
     ])
+    print("Created net")
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
@@ -51,15 +57,18 @@ def train_neural_net():
         metrics=['accuracy']
     )
 
+    print("Abt to train")
     # Train our model, using the training images and labels
     model.fit(train_images,
               train_labels,
               epochs=5,
               callbacks=[checkpoint_callback])
+    print("Trained")
 
     # Save our model again, but this time the entire model in HDF5 format
     model.save('distracted_driver_recognition.h5')
 
+    """
     # Apply our neural net to the test data and see how it performs
     test_loss, test_acc = model.evaluate(test_images, test_labels)
     print('Test accuracy:', test_acc)
@@ -78,6 +87,7 @@ def train_neural_net():
         plot.subplot(num_rows, 2 * num_cols, 2 * i + 2)
         plot_value_array(i, predictions, test_labels)
     plot.show()
+    """
 
 
 def plot_image(i, predictions_array, true_label, img):
