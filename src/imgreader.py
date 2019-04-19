@@ -19,6 +19,7 @@ def get_train_files():
     # y_train = np.empty(dtype=None, shape=0)
     i = 0
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
+    np.set_printoptions(threshold=np.nan)
     with open('D:\\Python Projects\\DistractedDriving\\imagelist.csv', 'w') as csvfile:
         filewriter = csv.writer(csvfile, delimiter=',', quotechar='|')
         for distractionfolder in os.listdir(imgdir):
@@ -34,6 +35,33 @@ def get_train_files():
                 i += 1
                 print(i)
     # return x_train, y_train
+
+
+def get_subject_data(subj=2):
+    dir = 'D:\\Pictures\\Distracted Driving\\'
+    imgdir = dir + 'imgs\\train'
+    i = 0
+    x_train = np.empty(dtype=None, shape=0)
+    y_train = np.empty(dtype=None, shape=0)
+    imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
+    for distractionfolder in os.listdir(imgdir):
+        for image in os.listdir(imgdir + '\\' + distractionfolder):
+            img = cv2.imread(imgdir + '\\' + distractionfolder + '\\' + image)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            x_train = np.append(x_train, img)
+            (labelx, labely) = np.where(imagelist == image)
+            labelx = labelx[0]
+            labely = 1
+            y_train = np.append(y_train, imagelist[labelx][labely])
+            i += 1
+            print(i)
+
+
+i=np.where[0][0]
+j=0
+while arr[i+j][0] == subj:
+    type=arr[i+j][1]
+    
 
 
 def testlist():
