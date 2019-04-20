@@ -40,12 +40,12 @@ def get_subject_data(subj=2):
     y_train = np.empty(dtype='U', shape=0)
     np.set_printoptions(threshold=np.nan)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
-    a = str(subj)
-    while len(a) < 3:
-        a = '0' + a
-    a = 'p' + a
-    print('Gathering data on subject: ' + a)
-    datapts = np.where(imagelist == a)[0]
+    subj = str(subj)
+    while len(subj) < 3:
+        subj = '0' + subj
+    subj = 'p' + subj
+    print('Gathering data on subject: ' + subj)
+    datapts = np.where(imagelist == subj)[0]
     print('Working... this may take up to 5 minutes')
     for locus in datapts:
         label = imagelist[locus][1]
