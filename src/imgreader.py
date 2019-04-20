@@ -32,6 +32,7 @@ def get_train_files():
                 filewriter.writerow([img, imagelist[labelx][labely]])
                 i += 1
                 print(i)
+# D:\\Pictures\\Distracted Driving\\imgs\\train
 
 
 def get_subject_data(subj=2):
@@ -54,6 +55,7 @@ def get_subject_data(subj=2):
         label = imagelist[locus][1]
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
         x_train = np.append(x_train, image)
         y_train = np.append(y_train, label)
         draw_progress_bar((locus-first)/(last-first))

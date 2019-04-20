@@ -60,7 +60,7 @@ def train_neural_net():
         (train_images, train_labels) = distracted_drivers  # .getData()
 
         # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
-        train_images = train_images / 255.0
+        train_images = np.true_divide(train_images, 255.0)
 
         print(f"imagedata.train_neural_net: Training for subject {subject}")
         # Train our model, using the training images and labels
@@ -126,6 +126,3 @@ def plot_value_array(i, predictions_array, true_label):
 
     this_plot[predicted_label].set_color('red')
     this_plot[true_label].set_color('blue')
-
-if __name__ == "__main__":
-    train_neural_net()
