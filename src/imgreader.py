@@ -7,16 +7,13 @@ from pathlib import Path
 
 def get_train_files():
     """
-    Method returns a 2D numpy array containing the train files and labels
+    Method generates a csv containing the train files and labels
+    Don't use this unless you want to waste 3 hours of your life only to generate a 30 gig file
     """
-
     if Path('D:\\Python Projects\\DistractedDriving\\imagelist.csv').is_file():
         return
-
     dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\train'
-    # x_train = np.empty(dtype=None, shape=0)
-    # y_train = np.empty(dtype=None, shape=0)
     i = 0
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
     np.set_printoptions(threshold=np.nan)
@@ -34,34 +31,28 @@ def get_train_files():
                 filewriter.writerow([img, imagelist[labelx][labely]])
                 i += 1
                 print(i)
-    # return x_train, y_train
 
 
 def get_subject_data(subj=2):
     dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\train'
-    i = 0
-    x_train = np.empty(dtype=None, shape=0)
-    y_train = np.empty(dtype=None, shape=0)
+    x_train = np.empty(dtype='U', shape=0)
+    y_train = np.empty(dtype='U', shape=0)
+    np.set_printoptions(threshold=np.nan)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
-    for distractionfolder in os.listdir(imgdir):
-        for image in os.listdir(imgdir + '\\' + distractionfolder):
-            img = cv2.imread(imgdir + '\\' + distractionfolder + '\\' + image)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            x_train = np.append(x_train, img)
-            (labelx, labely) = np.where(imagelist == image)
-            labelx = labelx[0]
-            labely = 1
-            y_train = np.append(y_train, imagelist[labelx][labely])
-            i += 1
-            print(i)
-
-
-i=np.where[0][0]
-j=0
-while arr[i+j][0] == subj:
-    type=arr[i+j][1]
-    
+    a = str(subj)
+    while len(a) < 3:
+        a = '0' + a
+    a = 'p' + a
+    print('Gathering data on subject: ' + a)
+    datapts = np.where(imagelist == a)[0]
+    print('Working... this may take up to 5 minutes')
+    for locus in datapts:
+        label = imagelist[locus][1]
+        image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        x_train = np.append(x_train, image)
+        y_train = np.append(y_train, label)
 
 
 def testlist():
@@ -73,4 +64,4 @@ def testlist():
 
 
 if __name__ == "__main__":
-    get_train_files()
+    get_subject_data(15)
