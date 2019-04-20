@@ -3,6 +3,7 @@ import os
 import cv2
 import csv
 from pathlib import Path
+import sys
 
 
 def get_train_files():
@@ -47,13 +48,24 @@ def get_subject_data(subj=2):
     print('imgreader.get_subject_data: Gathering data on subject ' + subj)
     datapts = np.where(imagelist == subj)[0]
     print('imgreader.get_subject_data: Working... this may take up to 5 minutes')
+    first = datapts[0]
+    last = datapts[np.size(datapts) - 1]
     for locus in datapts:
         label = imagelist[locus][1]
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         x_train = np.append(x_train, image)
         y_train = np.append(y_train, label)
+        draw_progress_bar((locus-first)/(last-first))
     return x_train, y_train
+
+
+# progress bar method i found on stack overflow :)
+def draw_progress_bar(percent, length=50):
+    # percent float from 0 to 1.
+    sys.stdout.write("\r")
+    sys.stdout.write("[{:<{}}] {:.0f}%".format("=" * int(length * percent), length, percent * 100))
+    sys.stdout.flush()
 
 
 def testlist():

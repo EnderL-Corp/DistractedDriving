@@ -126,3 +126,6 @@ def plot_value_array(i, predictions_array, true_label):
 
     this_plot[predicted_label].set_color('red')
     this_plot[true_label].set_color('blue')
+
+if __name__ == "__main__":
+    train_neural_net()
