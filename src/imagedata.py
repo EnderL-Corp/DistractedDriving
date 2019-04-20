@@ -7,7 +7,8 @@ from tensorflow import keras as k
 import numpy as np
 import matplotlib.pyplot as plot
 
-from src import imgreader
+availableSubjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42,
+                     45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 72, 75, 81]
 
 class_lookup_table = [['c0', 'Normal driving'],
                       ['c1', 'Texting'],
@@ -31,20 +32,13 @@ def train_neural_net():
                                                       save_weights_only=True,
                                                       verbose=1)
 
-    distracted_drivers = imgreader.getTrainFiles()
-    print("Got files")
-    train_images, train_labels = distracted_drivers  # .getData()
-
-    # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
-    train_images = train_images / 255.0
-
     # Define our model. This model consists of 3 layers:
     # Flatten converts the image into a one dimensional array to pass through our net
     # The second layer has 128 nodes that are all connected (Dense)
     # The third layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
     model = k.Sequential([
-        k.layers.Flatten(input_shape=(640, 480)),
+        k.layers.Flatten(input_shape=(28, 28)),  # 640, 480)),
         k.layers.Dense(128, activation=tf.nn.relu),
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
@@ -56,14 +50,23 @@ def train_neural_net():
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
+    print("Compiled net")
 
-    print("Abt to train")
-    # Train our model, using the training images and labels
-    model.fit(train_images,
-              train_labels,
-              epochs=5,
-              callbacks=[checkpoint_callback])
-    print("Trained")
+    for subject in availableSubjects:
+        distracted_drivers = ""  # imgreader.get_subject_data(subject)
+        print("Got files")
+        (train_images, train_labels) = distracted_drivers  # .getData()
+
+        # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
+        train_images = train_images / 255.0
+
+        print(f"Training for subject {subject}")
+        # Train our model, using the training images and labels
+        model.fit(train_images,
+                  train_labels,
+                  epochs=5,
+                  callbacks=[checkpoint_callback])
+        print(f"Trained for subject {subject}")
 
     # Save our model again, but this time the entire model in HDF5 format
     model.save('distracted_driver_recognition.h5')
@@ -96,7 +99,7 @@ def plot_image(i, predictions_array, true_label, img):
     plot.xticks([])
     plot.yticks([])
 
-    plot.imshow(img, cmap=plot.cm)
+    plot.imshow(img, cmap=plot.cm.binary)
 
     predicted_label = np.argmax(predictions_array)
     if predicted_label == true_label:
