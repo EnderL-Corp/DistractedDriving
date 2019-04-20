@@ -7,6 +7,8 @@ from tensorflow import keras as k
 import numpy as np
 import matplotlib.pyplot as plot
 
+import src.imgreader as imgreader
+
 availableSubjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42,
                      45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 72, 75, 81]
 
@@ -42,7 +44,7 @@ def train_neural_net():
         k.layers.Dense(128, activation=tf.nn.relu),
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
-    print("Created net")
+    print("imagedata.train_neural_net: Created net")
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
@@ -50,23 +52,23 @@ def train_neural_net():
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
-    print("Compiled net")
+    print("imagedata.train_neural_net: Compiled net")
 
     for subject in availableSubjects:
-        distracted_drivers = ""  # imgreader.get_subject_data(subject)
-        print("Got files")
+        distracted_drivers = imgreader.get_subject_data(subject)
+        print(f"imagedata.train_neural_net: Got files for subject {subject}")
         (train_images, train_labels) = distracted_drivers  # .getData()
 
         # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
         train_images = train_images / 255.0
 
-        print(f"Training for subject {subject}")
+        print(f"imagedata.train_neural_net: Training for subject {subject}")
         # Train our model, using the training images and labels
         model.fit(train_images,
                   train_labels,
                   epochs=5,
                   callbacks=[checkpoint_callback])
-        print(f"Trained for subject {subject}")
+        print(f"imagedata.train_neural_net: Trained for subject {subject}")
 
     # Save our model again, but this time the entire model in HDF5 format
     model.save('distracted_driver_recognition.h5')

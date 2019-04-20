@@ -44,15 +44,16 @@ def get_subject_data(subj=2):
     while len(subj) < 3:
         subj = '0' + subj
     subj = 'p' + subj
-    print('Gathering data on subject: ' + subj)
+    print('imgreader.get_subject_data: Gathering data on subject ' + subj)
     datapts = np.where(imagelist == subj)[0]
-    print('Working... this may take up to 5 minutes')
+    print('imgreader.get_subject_data: Working... this may take up to 5 minutes')
     for locus in datapts:
         label = imagelist[locus][1]
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         x_train = np.append(x_train, image)
         y_train = np.append(y_train, label)
+    return x_train, y_train
 
 
 def testlist():
@@ -64,4 +65,5 @@ def testlist():
 
 
 if __name__ == "__main__":
+    # Testing
     get_subject_data(15)
