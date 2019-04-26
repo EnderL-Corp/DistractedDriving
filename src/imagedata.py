@@ -60,7 +60,7 @@ def train_neural_net():
         (train_images, train_labels) = distracted_drivers  # .getData()
 
         # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
-        train_images = np.true_divide(train_images, 255.0)
+        train_images = (np.true_divide(train_images.astype(int), 255.0)).tolist()
 
         print(f"imagedata.train_neural_net: Training for subject {subject}")
         # Train our model, using the training images and labels
