@@ -70,6 +70,7 @@ def get_subject_data(subj=2):
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
     y_train = [[[]]]
+    i=0
     np.set_printoptions(threshold=sys.maxsize)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
     subj = str(subj)
@@ -86,11 +87,13 @@ def get_subject_data(subj=2):
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
-        x_train.append(image.tolist())
-        y_train.append(label)
+        x_train.insert(i, image.tolist())
+        y_train.insert(i, label)
+        i += 1
         draw_progress_bar((locus-first)/(last-first))
 
-    print(x_train)
+    del x_train[i]
+
     return x_train, y_train
 
 

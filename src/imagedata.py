@@ -59,9 +59,16 @@ def train_neural_net():
         print(f"imagedata.train_neural_net: Got files for subject {subject}")
         (train_images, train_labels) = distracted_drivers  # .getData()
 
-        # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
-        train_images = train_images / 255.0
+        train_images_new = [[[]]]
+        i = 0
 
+        # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
+        for image in train_images:
+            train_images_new.insert(i, (np.divide(np.array(image), 255)).tolist())
+            i += 1
+        del train_images_new[i]
+
+    """
         print(f"imagedata.train_neural_net: Training for subject {subject}")
         # Train our model, using the training images and labels
         model.fit(train_images,
@@ -72,7 +79,7 @@ def train_neural_net():
 
     # Save our model again, but this time the entire model in HDF5 format
     model.save('distracted_driver_recognition.h5')
-
+    """
     """
     # Apply our neural net to the test data and see how it performs
     test_loss, test_acc = model.evaluate(test_images, test_labels)
