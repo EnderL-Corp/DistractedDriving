@@ -109,11 +109,12 @@ def get_test_subject_data():
         image = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
-        x_test.insert(i, image.tolist())
+        image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
+        x_test.insert(i, image)
         i += 1
     del x_test[i]
 
-    return x_test
+    return np.array(x_test)
 
 
 # progress bar method i found on stack overflow :)

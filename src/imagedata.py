@@ -26,6 +26,9 @@ class_names = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9']
 
 
 def train_neural_net():
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    session = tf.Session(config=config)
 
     # Define our model. This model consists of 4 layers:
     # 2 2dConvolution layers apply spacial convolution over each image
@@ -33,8 +36,8 @@ def train_neural_net():
     # The fourth layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
     model = k.Sequential([
-        k.layers.Conv2D(32, kernel_size=4, activation=tf.nn.relu, input_shape=(240, 320, 1)),
-        k.layers.Conv2D(16, kernel_size=4, activation=tf.nn.relu),
+        k.layers.Conv2D(16, kernel_size=4, activation=tf.nn.relu, input_shape=(240, 320, 1)),
+        k.layers.Conv2D(8, kernel_size=4, activation=tf.nn.relu),
         k.layers.Flatten(input_shape=(240, 320)),
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
@@ -72,6 +75,9 @@ def train_neural_net():
 
 
 def test_model():
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    session = tf.Session(config=config)
 
     trained_model = k.models.load_model('distracted_driver_recognition.h5')
 
@@ -80,15 +86,7 @@ def test_model():
 
     test_images = distracted_drivers
 
-    test_images_new = [[[]]]
-    i = 0
-
-    # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
-    for image in test_images:
-        test_images_new.insert(i, (np.divide(np.array(image), 255)).tolist())
-        i += 1
-    del test_images_new[i]
-    test_images_new = np.array(test_images_new)
+    test_images_new = test_images.reshape(len(test_images), 240, 320, 1)
 
     # Save our model's guesses
     predictions = trained_model.predict(test_images_new)
@@ -130,6 +128,7 @@ def plot_value_array(i, predictions_array):
     predicted_label = np.argmax(predictions_array)
 
     this_plot[predicted_label].set_color('red')
+
 
 if __name__ == "__main__":
     test_model()
