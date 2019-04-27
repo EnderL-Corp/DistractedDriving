@@ -109,8 +109,7 @@ def test_model():
     distracted_drivers = imgreader.get_test_subject_data()
     print(f"imagedata.train_neural_net: Got files for subjects")
 
-
-    (test_images, test_labels) = distracted_drivers
+    test_images = distracted_drivers
 
     test_images_new = [[[]]]
     i = 0
@@ -120,33 +119,26 @@ def test_model():
         test_images_new.insert(i, (np.divide(np.array(image), 255)).tolist())
         i += 1
     del test_images_new[i]
-    del test_images_new[i - 1]
     test_images_new = np.array(test_images_new)
-
-    print(test_images_new)
-
-    test_loss, test_acc = trained_model.evaluate(test_images_new, test_labels)
-
-    print('Test accuracy:', test_acc)
 
     # Save our model's guesses
     predictions = trained_model.predict(test_images_new)
 
     # Show a cool plot of some results
-    num_rows = 1
-    num_cols = 3
+    num_rows = 3
+    num_cols = 8
     num_images = num_rows * num_cols
     plot.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
     for i in range(num_images):
         plot.subplot(num_rows, 2 * num_cols, 2 * i + 1)
-        plot_image(i, predictions, test_labels, test_images)
+        plot_image(i, predictions, test_images)
         plot.subplot(num_rows, 2 * num_cols, 2 * i + 2)
-        plot_value_array(i, predictions, test_labels)
+        plot_value_array(i, predictions)
     plot.show()
 
 
-def plot_image(i, predictions_array, true_label, img):
-    predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+def plot_image(i, predictions_array, img):
+    predictions_array, img = predictions_array[i], img[i]
     plot.grid(False)
     plot.xticks([])
     plot.yticks([])
@@ -154,19 +146,13 @@ def plot_image(i, predictions_array, true_label, img):
     plot.imshow(img, cmap=plot.cm.binary)
 
     predicted_label = np.argmax(predictions_array)
-    if predicted_label == true_label:
-        color = 'blue'
-    else:
-        color = 'red'
 
-    plot.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label],
-                                          100 * np.max(predictions_array),
-                                          class_names[true_label]),
-                color=color)
+    plot.xlabel("{} {:2.0f}%".format(class_names[predicted_label],
+                                          100 * np.max(predictions_array)))
 
 
-def plot_value_array(i, predictions_array, true_label):
-    predictions_array, true_label = predictions_array[i], true_label[i]
+def plot_value_array(i, predictions_array):
+    predictions_array = predictions_array[i]
     plot.grid(False)
     plot.xticks([])
     plot.yticks([])
@@ -175,7 +161,6 @@ def plot_value_array(i, predictions_array, true_label):
     predicted_label = np.argmax(predictions_array)
 
     this_plot[predicted_label].set_color('red')
-    this_plot[true_label].set_color('blue')
 
 if __name__ == "__main__":
     test_model()

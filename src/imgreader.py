@@ -66,7 +66,7 @@ def get_subject_data(subj=2):
 
 
 def get_subject_data(subj=2):
-    dir = 'D:\\Pictures\\Distracted Driving\\'
+    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
     y_train = np.array([])
@@ -100,22 +100,20 @@ def get_subject_data(subj=2):
 def get_test_subject_data():
     dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
     imgdir = dir + 'imgs\\test'
-    x_train = [[[]]]
+    x_test = [[[]]]
     np.set_printoptions(threshold=sys.maxsize)
-    image = cv2.imread(imgdir + '\\img_1.jpg')
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
-    x_train.insert(0, image.tolist())
-    image = cv2.imread(imgdir + '\\img_2.jpg')
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
-    x_train.insert(1, image.tolist())
-    image = cv2.imread(imgdir + '\\img_3.jpg')
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
-    x_train.insert(2, image.tolist())
+    imgs = [1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30]
+    i = 0
+    for img_num in imgs:
+        image = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
+        x_test.insert(i, image.tolist())
+        i += 1
+    del x_test[i]
 
-    return x_train, [5, 1, 3]
+    print(len(x_test))
+    return x_test
 
 
 # progress bar method i found on stack overflow :)
