@@ -66,7 +66,7 @@ def get_subject_data(subj=2):
 
 
 def get_subject_data(subj=2):
-    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
+    dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
     y_train = np.array([])
