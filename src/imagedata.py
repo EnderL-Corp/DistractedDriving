@@ -49,26 +49,23 @@ def train_neural_net():
     )
     print("[imagedata.train_neural_net]: Compiled neural net")
 
-    for round in range(5):
-        print(f"[imagedata.train_neural_net]: Starting training for round {round}")
+    for subject in availableSubjects:
+        # Retrieve our images for the subject we will be looking at
+        distracted_drivers = imgreader.get_subject_data(subject)
 
-        for subject in availableSubjects:
-            # Retrieve our images for the subject we will be looking at
-            distracted_drivers = imgreader.get_subject_data(subject)
+        print(f"[imagedata.train_neural_net]: Retrieved files for subject {subject}")
+        (train_images, train_labels) = distracted_drivers
 
-            print(f"[imagedata.train_neural_net]: Retrieved files for subject {subject}")
-            (train_images, train_labels) = distracted_drivers
+        # Reshape the list of our training images to correctly be used by the neural net
+        train_images = train_images.reshape(len(train_images), 240, 320, 1)
 
-            # Reshape the list of our training images to correctly be used by the neural net
-            train_images = train_images.reshape(len(train_images), 240, 320, 1)
+        print(f"[imagedata.train_neural_net]: Training for subject {subject}")
+        # Train our model, using the training images and labels
+        model.fit(train_images,
+                  train_labels,
+                  epochs=5)
 
-            print(f"[imagedata.train_neural_net]: Training for subject {subject}")
-            # Train our model, using the training images and labels
-            model.fit(train_images,
-                      train_labels,
-                      epochs=5)
-
-            print(f"[imagedata.train_neural_net]: Trained for subject {subject}")
+        print(f"[imagedata.train_neural_net]: Trained for subject {subject}")
 
     # Save our model to recover later
     model.save('distracted_driver_recognition.h5')
