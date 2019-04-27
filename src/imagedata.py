@@ -9,7 +9,7 @@ import matplotlib.pyplot as plot
 
 import src.imgreader as imgreader
 
-availableSubjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42,
+availableSubjects = [2,  12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42,
                      45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 72, 75, 81]
 
 class_lookup_table = [['c0', 'Normal driving'],
@@ -45,8 +45,6 @@ def train_neural_net():
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
     print("imagedata.train_neural_net: Created net")
-
-    fashion_mnist = k.datasets.fashion_mnist
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
@@ -104,6 +102,49 @@ def train_neural_net():
     """
 
 
+def test_model():
+
+    trained_model = k.models.load_model('distracted_driver_recognition.h5')
+
+    distracted_drivers = imgreader.get_test_subject_data()
+    print(f"imagedata.train_neural_net: Got files for subjects")
+
+
+    (test_images, test_labels) = distracted_drivers
+
+    test_images_new = [[[]]]
+    i = 0
+
+    # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
+    for image in test_images:
+        test_images_new.insert(i, (np.divide(np.array(image), 255)).tolist())
+        i += 1
+    del test_images_new[i]
+    del test_images_new[i - 1]
+    test_images_new = np.array(test_images_new)
+
+    print(test_images_new)
+
+    test_loss, test_acc = trained_model.evaluate(test_images_new, test_labels)
+
+    print('Test accuracy:', test_acc)
+
+    # Save our model's guesses
+    predictions = trained_model.predict(test_images_new)
+
+    # Show a cool plot of some results
+    num_rows = 1
+    num_cols = 3
+    num_images = num_rows * num_cols
+    plot.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
+    for i in range(num_images):
+        plot.subplot(num_rows, 2 * num_cols, 2 * i + 1)
+        plot_image(i, predictions, test_labels, test_images)
+        plot.subplot(num_rows, 2 * num_cols, 2 * i + 2)
+        plot_value_array(i, predictions, test_labels)
+    plot.show()
+
+
 def plot_image(i, predictions_array, true_label, img):
     predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
     plot.grid(False)
@@ -135,3 +176,6 @@ def plot_value_array(i, predictions_array, true_label):
 
     this_plot[predicted_label].set_color('red')
     this_plot[true_label].set_color('blue')
+
+if __name__ == "__main__":
+    test_model()

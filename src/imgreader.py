@@ -71,7 +71,7 @@ def get_subject_data(subj=2):
     x_train = [[[]]]
     y_train = np.array([])
     i=0
-    np.set_printoptions(threshold=3)
+    np.set_printoptions(threshold=sys.maxsize)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
     subj = str(subj)
     while len(subj) < 3:
@@ -95,6 +95,27 @@ def get_subject_data(subj=2):
     del x_train[i]
 
     return x_train, y_train
+
+
+def get_test_subject_data():
+    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
+    imgdir = dir + 'imgs\\test'
+    x_train = [[[]]]
+    np.set_printoptions(threshold=sys.maxsize)
+    image = cv2.imread(imgdir + '\\img_1.jpg')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
+    x_train.insert(0, image.tolist())
+    image = cv2.imread(imgdir + '\\img_2.jpg')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
+    x_train.insert(1, image.tolist())
+    image = cv2.imread(imgdir + '\\img_3.jpg')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
+    x_train.insert(2, image.tolist())
+
+    return x_train, [5, 1, 3]
 
 
 # progress bar method i found on stack overflow :)
