@@ -88,7 +88,7 @@ def get_subject_data(subj=2):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
         x_train.insert(i, image.tolist())
-        y_train = np.append(y_train, label)
+        y_train = np.append(y_train, str(label).lstrip('c'))
         i += 1
         draw_progress_bar((locus-first)/(last-first))
 
