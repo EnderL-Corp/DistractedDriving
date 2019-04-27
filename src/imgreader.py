@@ -66,12 +66,12 @@ def get_subject_data(subj=2):
 
 
 def get_subject_data(subj=2):
-    dir = 'D:\\Pictures\\Distracted Driving\\'
+    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
-    y_train = [[[]]]
+    y_train = np.array([])
     i=0
-    np.set_printoptions(threshold=sys.maxsize)
+    np.set_printoptions(threshold=3)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
     subj = str(subj)
     while len(subj) < 3:
@@ -88,7 +88,7 @@ def get_subject_data(subj=2):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
         x_train.insert(i, image.tolist())
-        y_train.insert(i, label)
+        y_train = np.append(y_train, label)
         i += 1
         draw_progress_bar((locus-first)/(last-first))
 
