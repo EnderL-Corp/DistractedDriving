@@ -69,7 +69,7 @@ def get_subject_data(subj=2):
     dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
-    y_train = [[[]]]
+    y_train = []
     i=0
     np.set_printoptions(threshold=sys.maxsize)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')

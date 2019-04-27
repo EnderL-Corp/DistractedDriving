@@ -40,7 +40,7 @@ def train_neural_net():
     # The third layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
     model = k.Sequential([
-        k.layers.Flatten(input_shape=(28, 28)),  # 640, 480)),
+        k.layers.Flatten(input_shape=(120, 160)),  # 640, 480)),
         k.layers.Dense(128, activation=tf.nn.relu),
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
@@ -68,10 +68,11 @@ def train_neural_net():
             i += 1
         del train_images_new[i]
 
-    """
+        print(np.shape(train_images_new))
+
         print(f"imagedata.train_neural_net: Training for subject {subject}")
         # Train our model, using the training images and labels
-        model.fit(train_images,
+        model.fit(train_images_new,
                   train_labels,
                   epochs=5,
                   callbacks=[checkpoint_callback])
@@ -79,7 +80,7 @@ def train_neural_net():
 
     # Save our model again, but this time the entire model in HDF5 format
     model.save('distracted_driver_recognition.h5')
-    """
+
     """
     # Apply our neural net to the test data and see how it performs
     test_loss, test_acc = model.evaluate(test_images, test_labels)
