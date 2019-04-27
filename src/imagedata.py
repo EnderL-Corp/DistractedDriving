@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-import os
 import tensorflow as tf
 from tensorflow import keras as k
 
@@ -27,24 +26,20 @@ class_names = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9']
 
 
 def train_neural_net():
-    # Set checkpoint data so we can save the state of our neural net to load later
-    checkpoint_path = "training_1/cp.ckpt"
-    checkpoint_dir = os.path.dirname(checkpoint_path)
-    checkpoint_callback = k.callbacks.ModelCheckpoint(checkpoint_path,
-                                                      save_weights_only=True,
-                                                      verbose=1)
 
-    # Define our model. This model consists of 3 layers:
-    # Flatten converts the image into a one dimensional array to pass through our net
-    # The second layer has 128 nodes that are all connected (Dense)
-    # The third layer has 10 nodes whose values will be probabilities that sum to one. These represent
+    # Define our model. This model consists of 4 layers:
+    # 2 2dConvolution layers apply spacial convolution over each image
+    # The third layer flattens the image into a one dimensional array to pass through our net
+    # The fourth layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
     model = k.Sequential([
-        k.layers.Flatten(input_shape=(120, 160)),
-        k.layers.Dense(128, activation=tf.nn.relu),
+        k.layers.Conv2D(32, kernel_size=4, activation=tf.nn.relu, input_shape=(240, 320, 1)),
+        k.layers.Conv2D(16, kernel_size=4, activation=tf.nn.relu),
+        k.layers.Flatten(input_shape=(240, 320)),
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
-    print("imagedata.train_neural_net: Created net")
+    print("[imagedata.train_neural_net]: Created neural net")
+    model.summary()
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
@@ -52,54 +47,31 @@ def train_neural_net():
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
-    print("imagedata.train_neural_net: Compiled net")
+    print("[imagedata.train_neural_net]: Compiled neural net")
 
-    for subject in availableSubjects:
-        distracted_drivers = imgreader.get_subject_data(subject)
-        print(f"imagedata.train_neural_net: Got files for subject {subject}")
-        (train_images, train_labels) = distracted_drivers  # .getData()
+    for round in range(5):
+        print(f"[imagedata.train_neural_net]: Starting training for round {round}")
 
-        train_images_new = [[[]]]
-        i = 0
+        for subject in availableSubjects:
+            # Retrieve our images for the subject we will be looking at
+            distracted_drivers = imgreader.get_subject_data(subject)
 
-        # Covert greyscale images with pixel values from 0-255 to pixel values 0-1
-        for image in train_images:
-            train_images_new.insert(i, (np.divide(np.array(image), 255)).tolist())
-            i += 1
-        del train_images_new[i]
-        train_images_new = np.array(train_images_new)
+            print(f"[imagedata.train_neural_net]: Retrieved files for subject {subject}")
+            (train_images, train_labels) = distracted_drivers
 
+            # Reshape the list of our training images to correctly be used by the neural net
+            train_images = train_images.reshape(len(train_images), 240, 320, 1)
 
-        print(f"imagedata.train_neural_net: Training for subject {subject}")
-        # Train our model, using the training images and labels
-        model.fit(train_images_new,
-                  train_labels,
-                  epochs=5)
-        print(f"imagedata.train_neural_net: Trained for subject {subject}")
+            print(f"[imagedata.train_neural_net]: Training for subject {subject}")
+            # Train our model, using the training images and labels
+            model.fit(train_images,
+                      train_labels,
+                      epochs=5)
 
-    # Save our model again, but this time the entire model in HDF5 format
+            print(f"[imagedata.train_neural_net]: Trained for subject {subject}")
+
+    # Save our model to recover later
     model.save('distracted_driver_recognition.h5')
-
-    """
-    # Apply our neural net to the test data and see how it performs
-    test_loss, test_acc = model.evaluate(test_images, test_labels)
-    print('Test accuracy:', test_acc)
-
-    # Save our model's guesses
-    predictions = model.predict(test_images)
-
-    # Show a cool plot of some results
-    num_rows = 5
-    num_cols = 3
-    num_images = num_rows * num_cols
-    plot.figure(figsize=(4 * num_cols, 2 * num_rows))
-    for i in range(num_images):
-        plot.subplot(num_rows, 2 * num_cols, 2 * i + 1)
-        plot_image(i, predictions, test_labels, test_images)
-        plot.subplot(num_rows, 2 * num_cols, 2 * i + 2)
-        plot_value_array(i, predictions, test_labels)
-    plot.show()
-    """
 
 
 def test_model():
@@ -107,7 +79,7 @@ def test_model():
     trained_model = k.models.load_model('distracted_driver_recognition.h5')
 
     distracted_drivers = imgreader.get_test_subject_data()
-    print(f"imagedata.train_neural_net: Got files for subjects")
+    print("[imagedata.train_neural_net]: Got files for subjects")
 
     test_images = distracted_drivers
 

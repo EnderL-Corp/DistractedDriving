@@ -77,24 +77,25 @@ def get_subject_data(subj=2):
     while len(subj) < 3:
         subj = '0' + subj
     subj = 'p' + subj
-    print('imgreader.get_subject_data: Gathering data on subject ' + subj)
     datapts = np.where(imagelist == subj)[0]
-    print('imgreader.get_subject_data: Working... this may take up to 5 minutes')
+    print(f'[imgreader.get_subject_data]: Retrieving data on subject {subj}... This may take a while')
     first = datapts[0]
     last = datapts[np.size(datapts) - 1]
     for locus in datapts:
         label = imagelist[locus][1]
-        image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
-        x_train.insert(i, image.tolist())
+        image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])  # Load image from file
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert image to greyscale
+        image = cv2.resize(image, (int(image.shape[1]*0.5), int(image.shape[0]*0.5)))
+        image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
+        x_train.insert(i, image)
         y_train = np.append(y_train, str(label).lstrip('c'))
         i += 1
         draw_progress_bar((locus-first)/(last-first))
 
     del x_train[i]
+    print('\n')
 
-    return x_train, y_train
+    return np.array(x_train), y_train
 
 
 def get_test_subject_data():
@@ -107,12 +108,11 @@ def get_test_subject_data():
     for img_num in imgs:
         image = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
+        image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
         x_test.insert(i, image.tolist())
         i += 1
     del x_test[i]
 
-    print(len(x_test))
     return x_test
 
 
