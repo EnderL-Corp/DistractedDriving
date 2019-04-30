@@ -64,9 +64,12 @@ def get_subject_data(subj=2):
     return x_train, y_train
 '''
 
+# 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
+# 'D:\\Pictures\\Distracted Driving\\'
+
 
 def get_subject_data(subj=2):
-    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
+    dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
     y_train = np.array([])
@@ -99,8 +102,8 @@ def get_subject_data(subj=2):
 
 
 def get_test_subject_data():
-    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
-    imgdir = dir + 'imgs\\test'
+    dir = 'D:\\Pictures\\Distracted Driving\\'
+    imgdir = dir + 'imgs\\train'
     x_test = [[[]]]
     np.set_printoptions(threshold=sys.maxsize)
     imgs = [1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30]
