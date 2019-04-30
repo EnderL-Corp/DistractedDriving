@@ -103,17 +103,18 @@ def get_subject_data(subj=2):
 
 def get_test_subject_data():
     dir = 'D:\\Pictures\\Distracted Driving\\'
-    imgdir = dir + 'imgs\\train'
+    imgdir = dir + 'imgs\\test'
     x_test = [[[]]]
     np.set_printoptions(threshold=sys.maxsize)
     imgs = [1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30]
     i = 0
     for img_num in imgs:
-        image = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        origimage = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
+        image = cv2.cvtColor(origimage, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_test.insert(i, image)
+        x_test.insert(i + 1, image)
         i += 1
     del x_test[i]
 
@@ -136,6 +137,15 @@ def testlist():
                 print(row[1])
 
 
+def edge_det_test():
+    image = cv2.imread('D:\\Pictures\\Distracted Driving\\imgs\\test\\img_1.jpg')
+    edge = cv2.Canny(image, 270, 270)
+    cv2.imshow('image', image)
+    cv2.imshow('edge', edge)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 if __name__ == "__main__":
     # Testing
-    get_subject_data(15)
+    edge_det_test()
