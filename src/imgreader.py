@@ -24,16 +24,19 @@ def get_train_files():
             for image in os.listdir(imgdir + '\\' + distractionfolder):
                 img = cv2.imread(imgdir + '\\' + distractionfolder + '\\' + image)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                #x_train = np.append(x_train, img)
                 (labelx, labely) = np.where(imagelist == image)
                 labelx = labelx[0]
                 labely = 1
+                #y_train = np.append(y_train, imagelist[labelx][labely])
                 filewriter.writerow([img, imagelist[labelx][labely]])
                 i += 1
                 print(i)
+# D:\\Pictures\\Distracted Driving\\imgs\\train
 
 
 def get_subject_data(subj=2):
-    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
+    dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
     y_train = np.array([])
@@ -66,18 +69,19 @@ def get_subject_data(subj=2):
 
 
 def get_test_subject_data():
-    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
+    dir = 'D:\\Pictures\\Distracted Driving\\'
     imgdir = dir + 'imgs\\test'
     x_test = [[[]]]
     np.set_printoptions(threshold=sys.maxsize)
     imgs = [1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30]
     i = 0
     for img_num in imgs:
-        image = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        origimage = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
+        image = cv2.cvtColor(origimage, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_test.insert(i, image)
+        x_test.insert(i + 1, image)
         i += 1
     del x_test[i]
 
@@ -92,6 +96,23 @@ def draw_progress_bar(percent, length=50):
     sys.stdout.flush()
 
 
+def testlist():
+    if Path('D:\\Python Projects\\DistractedDriving\\imagelist.csv').is_file() == True:
+        with open('D:\\Python Projects\\DistractedDriving\\imagelist.csv', 'r') as csvfile:
+            filereader = csv.reader(csvfile, delimiter=',')
+            for row in filereader:
+                print(row[1])
+
+
+def edge_det_test():
+    image = cv2.imread('D:\\Pictures\\Distracted Driving\\imgs\\test\\img_1.jpg')
+    edge = cv2.Canny(image, 270, 270)
+    cv2.imshow('image', image)
+    cv2.imshow('edge', edge)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 if __name__ == "__main__":
     # Testing
-    get_subject_data(15)
+    edge_det_test()
