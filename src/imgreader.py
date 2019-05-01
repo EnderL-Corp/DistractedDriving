@@ -34,39 +34,6 @@ def get_train_files():
                 print(i)
 # D:\\Pictures\\Distracted Driving\\imgs\\train
 
-'''
-def get_subject_data(subj=2):
-    dir = 'D:\\Pictures\\Distracted Driving\\'
-    imgdir = dir + 'imgs\\train'
-    x_train = np.empty(dtype='U', shape=0)
-    y_train = np.empty(dtype='U', shape=0)
-    np.set_printoptions(threshold=sys.maxsize)
-    imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
-    subj = str(subj)
-    while len(subj) < 3:
-        subj = '0' + subj
-    subj = 'p' + subj
-    print('imgreader.get_subject_data: Gathering data on subject ' + subj)
-    datapts = np.where(imagelist == subj)[0]
-    print('imgreader.get_subject_data: Working... this may take up to 5 minutes')
-    first = datapts[0]
-    last = datapts[np.size(datapts) - 1]
-    for locus in datapts:
-        label = imagelist[locus][1]
-        image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
-        x_train = np.append(x_train, image)
-        y_train = np.append(y_train, label)
-        draw_progress_bar((locus-first)/(last-first))
-
-    print(x_train[0])
-    return x_train, y_train
-'''
-
-# 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
-# 'D:\\Pictures\\Distracted Driving\\'
-
 
 def get_subject_data(subj=2):
     dir = 'D:\\Pictures\\Distracted Driving\\'
@@ -102,7 +69,7 @@ def get_subject_data(subj=2):
 
 
 def get_test_subject_data():
-    dir = 'D:\\Pictures\\Distracted Driving\\'
+    dir = 'C:\\Users\\Luke\\Downloads\\state-farm-distracted-driver-detection\\'
     imgdir = dir + 'imgs\\test'
     x_test = [[[]]]
     np.set_printoptions(threshold=sys.maxsize)
