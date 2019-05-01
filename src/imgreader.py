@@ -138,8 +138,8 @@ def testlist():
 
 
 def edge_det_test():
-    image = cv2.imread('D:\\Pictures\\Distracted Driving\\imgs\\test\\img_1.jpg')
-    edge = cv2.Canny(image, 270, 270)
+    image = cv2.imread('D:\\Pictures\\Distracted Driving\\imgs\\test\\img_385.jpg')
+    edge = cv2.Canny(image, 100, 100)
     cv2.imshow('image', image)
     cv2.imshow('edge', edge)
     cv2.waitKey(0)

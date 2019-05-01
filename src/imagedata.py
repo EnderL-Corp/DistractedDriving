@@ -37,7 +37,9 @@ def train_neural_net():
     #       The confidence the model has that a certain image fits a certain label
     model = k.Sequential([
         k.layers.Conv2D(16, kernel_size=4, activation=tf.nn.relu, input_shape=(240, 320, 1)),
+        # k.layers.MaxPooling2D(pool_size=2),
         k.layers.Conv2D(8, kernel_size=4, activation=tf.nn.relu),
+        # k.layers.MaxPooling2D(pool_size=2),
         k.layers.Flatten(input_shape=(240, 320)),
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
