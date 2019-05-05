@@ -8,8 +8,10 @@ import matplotlib.pyplot as plot
 
 import src.imgreader as imgreader
 
-available_subjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42,
-                      45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 72, 75, 81]
+available_subjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42]
+                      # 45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 75, 81]
+
+                      # p072 aint it
 
 class_lookup_table = {'c0': 'Normal driving',
                       'c1': 'Texting',
@@ -35,48 +37,41 @@ def train_neural_net():
     # The third layer flattens the image into a one dimensional array to pass through our net
     # The fourth layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
+
     model = k.Sequential([
-        k.layers.Conv2D(8, kernel_size=3, input_shape=(240, 320, 1)),
+        k.layers.Conv2D(32, kernel_size=(3, 3), input_shape=(120, 160, 3)),
         k.layers.Activation(activation=tf.nn.relu),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        k.layers.Conv2D(8, kernel_size=3),
+        k.layers.Conv2D(32, kernel_size=(3, 3)),
         k.layers.Activation(activation=tf.nn.relu),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        k.layers.Conv2D(16, kernel_size=3),
+        k.layers.Conv2D(64, kernel_size=(3, 3)),
         k.layers.Activation(activation=tf.nn.relu),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        k.layers.Conv2D(32, kernel_size=3),
-        k.layers.Activation(activation=tf.nn.relu),
-        k.layers.MaxPooling2D(pool_size=(2, 2)),
+        k.layers.Flatten(),
 
-        k.layers.Conv2D(4, kernel_size=3),
-        k.layers.Activation(activation=tf.nn.relu),
-        k.layers.MaxPooling2D(pool_size=(2, 2)),
-        k.layers.Dropout(0.2),
-
-        k.layers.Flatten(input_shape=(240, 320)),
-
-        k.layers.Dense(64),
+        k.layers.Dense(256),
         k.layers.Activation(activation=tf.nn.relu),
         k.layers.Dropout(0.5),
 
         k.layers.Dense(10, activation=tf.nn.softmax)
     ])
+
     print("[imagedata.train_neural_net]: Created neural net")
     model.summary()
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
-        optimizer='adam',
+        optimizer='rmsprop',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
     print("[imagedata.train_neural_net]: Compiled neural net")
 
-    for round in range(5):
+    for round in range(0, 3):
         print(f"Training for round {round}")
 
         for subject in available_subjects:
@@ -87,7 +82,7 @@ def train_neural_net():
             (train_images, train_labels) = distracted_drivers
 
             # Reshape the list of our training images to correctly be used by the neural net
-            train_images = train_images.reshape(len(train_images), 240, 320, 1)
+            train_images = train_images.reshape(len(train_images), 120, 160, 3)
 
             print(f"[imagedata.train_neural_net]: Training for subject {subject}")
             # Train our model, using the training images and labels
@@ -113,7 +108,7 @@ def test_model():
 
     test_images = distracted_drivers
 
-    test_images_new = test_images.reshape(len(test_images), 240, 320, 1)
+    test_images_new = test_images.reshape(len(test_images), 120, 160, 3)
 
     # Save our model's guesses
     predictions = trained_model.predict(test_images_new)
