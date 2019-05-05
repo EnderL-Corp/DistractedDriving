@@ -11,4 +11,4 @@ def test_net():
 
 
 if __name__ == "__main__":
-    train_net()
+    test_net()

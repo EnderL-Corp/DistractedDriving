@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import random
 import cv2
 import csv
 from pathlib import Path
@@ -40,7 +41,8 @@ def get_subject_data(subj=2):
     imgdir = dir + 'imgs\\train'
     x_train = [[[]]]
     y_train = np.array([])
-    i=0
+    i = 0
+    j = 0
     np.set_printoptions(threshold=sys.maxsize)
     imagelist = np.genfromtxt(dir + 'driver_imgs_list.csv', delimiter=',', dtype='U')
     subj = str(subj)
@@ -52,10 +54,13 @@ def get_subject_data(subj=2):
     first = datapts[0]
     last = datapts[np.size(datapts) - 1]
     for locus in datapts:
+        j += 1
+        if j % 5 == 0:
+            continue
         label = imagelist[locus][1]
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])  # Load image from file
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert image to greyscale
-        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
+        image = cv2.resize(image, (int(image.shape[1]*0.5), int(image.shape[0]*0.5)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_train.insert(i, image)
         y_train = np.append(y_train, str(label).lstrip('c'))
@@ -73,12 +78,30 @@ def get_test_subject_data():
     imgdir = dir + 'imgs\\test'
     x_test = [[[]]]
     np.set_printoptions(threshold=sys.maxsize)
-    imgs = [1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 15, 17, 18, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30]
     i = 0
-    for img_num in imgs:
-        image = cv2.imread(imgdir + '\\img_' + str(img_num) + '.jpg')
+    for x in range(0, 24):
+        image = cv2.imread(imgdir + '//' + random.choice(os.listdir(imgdir)))
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
+        image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
+        image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
+        x_test.insert(i, image)
+        i += 1
+    del x_test[i]
+
+    return np.array(x_test)
+
+
+def get_train_data_for_testing():
+    dir = 'D:\\Pictures\\Distracted Driving\\'
+    imgdir = dir + 'imgs\\train'
+    x_test = [[[]]]
+    np.set_printoptions(threshold=sys.maxsize)
+    i = 0
+    for x in range(0, 24):
+        newdir = imgdir + '\\c' + str(x % 10)
+        image = cv2.imread(newdir + '\\' + random.choice(os.listdir(newdir)))
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_test.insert(i, image)
         i += 1
