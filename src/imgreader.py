@@ -55,20 +55,25 @@ def get_subject_data(subj=2):
     last = datapts[np.size(datapts) - 1]
     for locus in datapts:
         j += 1
-        if j % 5 == 0:
+        if j % 3 != 0:
             continue
         label = imagelist[locus][1]
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])  # Load image from file
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert image to greyscale
-        image = cv2.resize(image, (int(image.shape[1]*0.5), int(image.shape[0]*0.5)))
+        image = cv2.resize(image, (int(image.shape[1]*0.25), int(image.shape[0]*0.25)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_train.insert(i, image)
-        y_train = np.append(y_train, str(label).lstrip('c'))
+
+        labelint = int(label.lstrip('c'))
+        label = str(0 if labelint == 0 else 1)
+
+        y_train = np.append(y_train, label)
         i += 1
         draw_progress_bar((locus-first)/(last-first))
 
     del x_train[i]
     print('\n')
+    print(np.array(x_train).shape)
 
     return np.array(x_train), y_train
 
@@ -82,7 +87,7 @@ def get_test_subject_data():
     for x in range(0, 24):
         image = cv2.imread(imgdir + '//' + random.choice(os.listdir(imgdir)))
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
+        image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_test.insert(i, image)
         i += 1
@@ -101,7 +106,7 @@ def get_train_data_for_testing():
         newdir = imgdir + '\\c' + str(x % 10)
         image = cv2.imread(newdir + '\\' + random.choice(os.listdir(newdir)))
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.resize(image, (int(image.shape[1] * 0.5), int(image.shape[0] * 0.5)))
+        image = cv2.resize(image, (int(image.shape[1] * 0.25), int(image.shape[0] * 0.25)))
         image = (np.divide(np.array(image), 255)).tolist()  # Convert pixel values from 0-255 to 0-1
         x_test.insert(i, image)
         i += 1

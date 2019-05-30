@@ -8,13 +8,13 @@ import matplotlib.pyplot as plot
 
 import src.imgreader as imgreader
 
-available_subjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 39, 41, 42,
+available_subjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 41, 42,
                       45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 75, 81]
 
-                      # p072 aint it
+                      # p039 and p072 aint it
 
 class_lookup_table = {'c0': 'Normal driving',
-                      'c1': 'Texting',
+                      'c1': 'Distracted Driving',       # 'Testing'
                       'c2': 'Talking on phone',
                       'c3': 'Texting',
                       'c4': 'Talking on phone',
@@ -24,7 +24,7 @@ class_lookup_table = {'c0': 'Normal driving',
                       'c8': 'Hair and makeup',
                       'c9': 'Talking to passenger'}
 
-class_names = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9']
+class_names = ['c0', 'c1']
 
 
 def train_neural_net():
@@ -39,33 +39,49 @@ def train_neural_net():
     #       The confidence the model has that a certain image fits a certain label
 
     model = k.Sequential([
-        k.layers.Conv2D(32, kernel_size=(3, 3), input_shape=(240, 320, 3)),
-        k.layers.Activation(activation=tf.nn.relu),
+        k.layers.Conv2D(32, kernel_size=(3, 3), input_shape=(120, 160, 3), activation='relu'),
+        # k.layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        k.layers.Conv2D(32, kernel_size=(3, 3)),
-        k.layers.Activation(activation=tf.nn.relu),
+        k.layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
+        # k.layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        k.layers.Conv2D(64, kernel_size=(3, 3)),
-        k.layers.Activation(activation=tf.nn.relu),
+        k.layers.Conv2D(128, kernel_size=(3, 3), activation='relu'),
+        # k.layers.Conv2D(128, kernel_size=(3, 3), activation='relu'),
+        k.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        k.layers.Conv2D(256, kernel_size=(3, 3), activation='relu'),
+        #k.layers.Conv2D(256, kernel_size=(3, 3), activation='relu'),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
         k.layers.Flatten(),
-
-        k.layers.Dense(256),
-        k.layers.Activation(activation=tf.nn.relu),
+        k.layers.Dense(256, activation='relu'),
         k.layers.Dropout(0.5),
 
-        k.layers.Dense(10, activation=tf.nn.softmax)
-    ])
+        k.layers.Dense(256, activation='relu'),
+        k.layers.Dropout(0.5),
 
+        k.layers.Dense(2),
+        k.layers.Activation(activation='softmax')
+    ])
+    '''
+
+    model = k.Sequential([
+        k.layers.Dense(12, input_shape=(120, 160, 3), activation='relu'),
+
+        k.layers.Dense(8, activation='relu'),
+
+        k.layers.Dense(2),
+        k.layers.Activation(activation='softmax')
+    ])
+    '''
     print("[imagedata.train_neural_net]: Created neural net")
     model.summary()
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
-        optimizer='rmsprop',
+        optimizer='adam',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
@@ -81,8 +97,10 @@ def train_neural_net():
             print(f"[imagedata.train_neural_net]: Retrieved files for subject {subject}")
             (train_images, train_labels) = distracted_drivers
 
+            print(np.array(train_images).shape)
             # Reshape the list of our training images to correctly be used by the neural net
-            train_images = train_images.reshape(len(train_images), 240, 320, 3)
+            train_images = train_images.reshape(len(train_images), 120, 160, 3)
+            print(np.array(train_images).shape)
 
             print(f"[imagedata.train_neural_net]: Training for subject {subject}")
             # Train our model, using the training images and labels
@@ -103,12 +121,12 @@ def test_model():
 
     trained_model = k.models.load_model('distracted_driver_recognition.h5')
 
-    distracted_drivers = imgreader.get_train_data_for_testing()
+    distracted_drivers = imgreader.get_test_subject_data()
     print("[imagedata.train_neural_net]: Got files for subjects")
 
     test_images = distracted_drivers
 
-    test_images_new = test_images.reshape(len(test_images), 240, 320, 3)
+    test_images_new = test_images.reshape(len(test_images), 120, 160, 3)
 
     # Save our model's guesses
     predictions = trained_model.predict(test_images_new)
