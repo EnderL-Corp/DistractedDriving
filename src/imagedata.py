@@ -8,9 +8,11 @@ import matplotlib.pyplot as plot
 
 import src.imgreader as imgreader
 
-available_subjects = [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 41, 42,
-                      45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 75, 81]
+available_subjects = [2, 14, 22, 24, 26, 42,
+                      45, 47, 52, 61, 66, 81]
 
+                      # [2, 12, 14, 15, 16, 21, 22, 24, 26, 35, 41, 42,
+                      # 45, 47, 49, 50, 51, 52, 56, 61, 64, 66, 75, 81]
                       # p039 and p072 aint it
 
 class_lookup_table = {'c0': 'Normal driving',
@@ -37,9 +39,9 @@ def train_neural_net():
     # The third layer flattens the image into a one dimensional array to pass through our net
     # The fourth layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
-
+    '''
     model = k.Sequential([
-        k.layers.Conv2D(32, kernel_size=(3, 3), input_shape=(120, 160, 3), activation='relu'),
+        k.layers.Conv2D(32, kernel_size=(3, 3), input_shape=(240, 320, 3), activation='relu'),
         # k.layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
@@ -68,26 +70,34 @@ def train_neural_net():
     '''
 
     model = k.Sequential([
-        k.layers.Dense(12, input_shape=(120, 160, 3), activation='relu'),
+        k.layers.Conv2D(32, (3, 3), input_shape=(240, 320, 3)),
+        k.layers.Activation("relu"),
+        k.layers.MaxPooling2D(pool_size=(2, 2)),
 
-        k.layers.Dense(8, activation='relu'),
+        k.layers.Conv2D(32, (3, 3)),
+        k.layers.Activation("relu"),
+        k.layers.MaxPooling2D(pool_size=(2, 2)),
 
+        k.layers.Flatten(),
+        k.layers.Dense(16),
+        k.layers.Activation("relu"),
+        k.layers.Dropout(0.5),
         k.layers.Dense(2),
-        k.layers.Activation(activation='softmax')
+        k.layers.Activation("softmax")
     ])
-    '''
+
     print("[imagedata.train_neural_net]: Created neural net")
     model.summary()
 
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
-        optimizer='adam',
+        optimizer='rmsprop',
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
     print("[imagedata.train_neural_net]: Compiled neural net")
 
-    for round in range(0, 3):
+    for round in range(0, 2):
         print(f"Training for round {round}")
 
         for subject in available_subjects:
@@ -99,14 +109,14 @@ def train_neural_net():
 
             print(np.array(train_images).shape)
             # Reshape the list of our training images to correctly be used by the neural net
-            train_images = train_images.reshape(len(train_images), 120, 160, 3)
+            train_images = train_images.reshape(len(train_images), 240, 320, 3)
             print(np.array(train_images).shape)
 
             print(f"[imagedata.train_neural_net]: Training for subject {subject}")
             # Train our model, using the training images and labels
             model.fit(train_images,
                       train_labels,
-                      epochs=5)
+                      epochs=3)
 
             print(f"[imagedata.train_neural_net]: Trained for subject {subject}")
 
@@ -121,12 +131,12 @@ def test_model():
 
     trained_model = k.models.load_model('distracted_driver_recognition.h5')
 
-    distracted_drivers = imgreader.get_test_subject_data()
+    distracted_drivers = imgreader.get_train_data_for_testing()
     print("[imagedata.train_neural_net]: Got files for subjects")
 
     test_images = distracted_drivers
 
-    test_images_new = test_images.reshape(len(test_images), 120, 160, 3)
+    test_images_new = test_images.reshape(len(test_images), 240, 320, 3)
 
     # Save our model's guesses
     predictions = trained_model.predict(test_images_new)
