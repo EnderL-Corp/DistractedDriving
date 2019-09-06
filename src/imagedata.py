@@ -39,36 +39,23 @@ def train_neural_net():
     # The third layer flattens the image into a one dimensional array to pass through our net
     # The fourth layer has 10 nodes whose values will be probabilities that sum to one. These represent
     #       The confidence the model has that a certain image fits a certain label
-    '''
+
     model = k.Sequential([
         k.layers.Conv2D(32, kernel_size=(3, 3), input_shape=(240, 320, 3), activation='relu'),
-        # k.layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
         k.layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
-        # k.layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
-        k.layers.MaxPooling2D(pool_size=(2, 2)),
-
-        k.layers.Conv2D(128, kernel_size=(3, 3), activation='relu'),
-        # k.layers.Conv2D(128, kernel_size=(3, 3), activation='relu'),
-        k.layers.MaxPooling2D(pool_size=(2, 2)),
-
-        k.layers.Conv2D(256, kernel_size=(3, 3), activation='relu'),
-        #k.layers.Conv2D(256, kernel_size=(3, 3), activation='relu'),
         k.layers.MaxPooling2D(pool_size=(2, 2)),
 
         k.layers.Flatten(),
-        k.layers.Dense(256, activation='relu'),
+        k.layers.Dense(16, activation='relu'),
         k.layers.Dropout(0.5),
 
-        k.layers.Dense(256, activation='relu'),
-        k.layers.Dropout(0.5),
-
-        k.layers.Dense(2),
-        k.layers.Activation(activation='softmax')
+        k.layers.Dense(1),
+        k.layers.Activation(activation='sigmoid')
     ])
-    '''
 
+    '''
     model = k.Sequential([
         k.layers.Conv2D(32, (3, 3), input_shape=(240, 320, 3)),
         k.layers.Activation("relu"),
@@ -82,9 +69,10 @@ def train_neural_net():
         k.layers.Dense(16),
         k.layers.Activation("relu"),
         k.layers.Dropout(0.5),
-        k.layers.Dense(2),
-        k.layers.Activation("softmax")
+        k.layers.Dense(1),
+        k.layers.Activation("sigmoid")
     ])
+    '''
 
     print("[imagedata.train_neural_net]: Created neural net")
     model.summary()
@@ -92,7 +80,7 @@ def train_neural_net():
     # Set the optimizer, loss, and metric our model will use while tuning itself
     model.compile(
         optimizer='rmsprop',
-        loss='sparse_categorical_crossentropy',
+        loss='binary_crossentropy',
         metrics=['accuracy']
     )
     print("[imagedata.train_neural_net]: Compiled neural net")
@@ -121,7 +109,7 @@ def train_neural_net():
             print(f"[imagedata.train_neural_net]: Trained for subject {subject}")
 
     # Save our model to recover later
-    model.save('distracted_driver_recognition.h5')
+    model.save('distracted_driver_recognition_model_5.h5')
 
 
 def test_model():
@@ -129,7 +117,7 @@ def test_model():
     config.gpu_options.allow_growth = True
     tf.Session(config=config)
 
-    trained_model = k.models.load_model('distracted_driver_recognition.h5')
+    trained_model = k.models.load_model('distracted_driver_recognition_overfit.h5')
 
     distracted_drivers = imgreader.get_train_data_for_testing()
     print("[imagedata.train_neural_net]: Got files for subjects")

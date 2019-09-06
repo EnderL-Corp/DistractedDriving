@@ -24,7 +24,7 @@ def get_train_files():
         for distractionfolder in os.listdir(imgdir):
             for image in os.listdir(imgdir + '\\' + distractionfolder):
                 img = cv2.imread(imgdir + '\\' + distractionfolder + '\\' + image)
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 #x_train = np.append(x_train, img)
                 (labelx, labely) = np.where(imagelist == image)
                 labelx = labelx[0]
@@ -55,9 +55,15 @@ def get_subject_data(subj=2):
     last = datapts[np.size(datapts) - 1]
     for locus in datapts:
         j += 1
-        if j % 3 != 0:
+        if (imagelist[locus][1] != 'c0') & (j % 7 != 0):
             continue
         label = imagelist[locus][1]
+        '''
+        labelint = int(label.lstrip('c'))
+        labelint = str(0 if labelint == 0 else 1)
+        if labelint == 1 and j % 25 != 0:
+            continue
+        '''
         image = cv2.imread(imgdir + '\\' + label + '\\' + imagelist[locus][2])  # Load image from file
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert image to greyscale
         image = cv2.resize(image, (int(image.shape[1]*0.5), int(image.shape[0]*0.5)))
@@ -65,9 +71,9 @@ def get_subject_data(subj=2):
         x_train.insert(i, image)
 
         labelint = int(label.lstrip('c'))
-        label = str(0 if labelint == 0 else 1)
+        labelint = str(0 if labelint == 0 else 1)
 
-        y_train = np.append(y_train, label)
+        y_train = np.append(y_train, labelint)
         i += 1
         draw_progress_bar((locus-first)/(last-first))
 
